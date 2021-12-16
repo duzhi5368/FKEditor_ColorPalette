@@ -1,0 +1,14 @@
+[gd_scene format=2]
+
+[node name="Control" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Label" type="Label" parent="."]
+modulate = Color( 0.94902, 0.917647, 0.917647, 1 )
+self_modulate = Color( 0.505882, 0.815686, 0.952941, 1 )
+margin_left = 311.0
+margin_top = 259.0
+margin_right = 735.0
+margin_bottom = 273.0
+text = "You can set Node color, with the ColorPalette in the bottom panel."

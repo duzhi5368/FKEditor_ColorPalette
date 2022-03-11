@@ -1,6 +1,6 @@
 # Created by Freeknight
 # Date: 2021/12/16
-# Desc：
+# Desc：单独一个色盘组件
 # @category: UI面板
 #--------------------------------------------------------------------------------------------------
 tool
@@ -14,69 +14,41 @@ signal container_selected(container_object)
 #--- enums ----------------------------------------------------------------------------------------
 #--- constants ------------------------------------------------------------------------------------
 #--- public variables - order: export > normal var > onready --------------------------------------
-onready var btn_load_to_picker = $MarginContainer/VBoxContainer/HBoxContainer/BtnLoadToPicker
-onready var btn_update_from_picker = $MarginContainer/VBoxContainer/HBoxContainer/BtnUpdateFromPicker
+# 调色板名
 onready var name_label = $MarginContainer/VBoxContainer/HBoxContainer/PaletteName
+# 色板格子
 onready var grid = $MarginContainer/VBoxContainer/PaletteTileContainer/TileContainer
 
-var palette: Palette
-var undoredo: UndoRedo
-var selected: bool = false setget set_selected 
+var palette: Palette								# 一个调色板逻辑对象
+var undoredo: UndoRedo							# undo/redo管理器
+var selected: bool = false setget set_selected 	# 当前本调色板是否被选中状态标识
 #--- private variables - order: export > normal var > onready -------------------------------------
 ### -----------------------------------------------------------------------------------------------
 
 ### Built in Engine Methods -----------------------------------------------------------------------
 func _ready():
-	btn_load_to_picker.connect("pressed", self, "load_to_picker")
-	btn_update_from_picker.connect("pressed", self, "update_from_picker")
 	grid.connect("grid_item_reordered", self, "_grid_item_reordered")
+	
+	if !palette:
+		return
 
 	var cr = ColorTile.new()
-	
-	if palette:
-		name_label.text = palette.name
-		name_label.hint_tooltip = palette.comments
-		for c in palette.colors:
-#			Color rect instance properties
-			var cri = cr.duplicate()
-			cri.color = c
-			cri.connect("tile_selected", self, "_on_tile_selected")
-			cri.connect("tile_deleted", self, "_on_tile_deleted")
-			grid.add_child(cri)
+	name_label.text = palette.name
+	for c in palette.colors:
+		var cri = cr.duplicate()
+		cri.color = c
+		cri.connect("tile_selected", self, "_on_tile_selected")
+		cri.connect("tile_deleted", self, "_on_tile_deleted")
+		grid.add_child(cri)
 ### -----------------------------------------------------------------------------------------------
 
 ### Public Methods --------------------------------------------------------------------------------
-func load_to_picker():
-	var new_picker_presets: PoolColorArray
-	
-	for c in palette.colors:
-		new_picker_presets.append(c)
-	
-	var ep = EditorPlugin.new()
-	ep.get_editor_interface() \
-		.get_editor_settings() \
-		.set_project_metadata("color_picker", "presets", new_picker_presets)
-	ep.free()
-# ------------------------------------------------------------------------------
-func update_from_picker():
-	var ep = EditorPlugin.new()
-	var colors: PoolColorArray = ep.get_editor_interface() \
-		.get_editor_settings() \
-		.get_project_metadata("color_picker", "presets")
-	
-	palette.colors.clear()
-	for c in colors:
-		palette.add_color(c)
-	
-	palette.save()
-	ep.free()	
-	emit_signal("palette_updated")
-# ------------------------------------------------------------------------------
+# 选中某个调色板
 func set_selected(value: bool) -> void:
 	selected = value
 	if selected:
 		var sb: StyleBoxFlat = get_stylebox("panel").duplicate()
-		sb.bg_color = Color("#2c3141")
+		sb.bg_color = Color(0.85, 0.83, 0.77)
 		add_stylebox_override("panel", sb)
 		emit_signal("container_selected", self)
 	else:

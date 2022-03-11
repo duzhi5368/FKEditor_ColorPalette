@@ -25,9 +25,6 @@ custom_constants/margin_top = 5
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 margin_left = 5.0
@@ -144,30 +141,30 @@ margin_right = 308.0
 margin_bottom = 583.0
 
 [node name="ColorPickerContainer" type="VBoxContainer" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll"]
-margin_right = 290.0
+margin_right = 307.0
 margin_bottom = 558.0
 
 [node name="SelectedColorLabel" type="Label" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer"]
-margin_right = 290.0
+margin_right = 307.0
 margin_bottom = 32.0
 text = "选择一个色盘或颜色"
 autowrap = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer"]
 margin_top = 36.0
-margin_right = 290.0
+margin_right = 307.0
 margin_bottom = 68.0
 
 [node name="SelectedColorRect" type="ColorRect" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer"]
-margin_right = 98.0
+margin_right = 107.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 50, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer"]
-margin_left = 102.0
-margin_right = 119.0
+margin_left = 111.0
+margin_right = 128.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 16, 0 )
 text = ">"
@@ -176,16 +173,16 @@ __meta__ = {
 }
 
 [node name="NewColorRect" type="ColorRect" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer"]
-margin_left = 123.0
-margin_right = 222.0
+margin_left = 132.0
+margin_right = 239.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 50, 0 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ApplyChanges" type="ToolButton" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer"]
-margin_left = 226.0
-margin_right = 256.0
+margin_left = 243.0
+margin_right = 273.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 30, 0 )
 hint_tooltip = "Replace/Override the existing color with the selected color."
@@ -193,8 +190,8 @@ theme = ExtResource( 1 )
 icon = ExtResource( 5 )
 
 [node name="AddNewColor" type="ToolButton" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer"]
-margin_left = 260.0
-margin_right = 290.0
+margin_left = 277.0
+margin_right = 307.0
 margin_bottom = 32.0
 rect_min_size = Vector2( 30, 0 )
 hint_tooltip = "Add the selected color to the palette"
@@ -203,7 +200,7 @@ icon = ExtResource( 3 )
 
 [node name="ColorPicker" type="ColorPicker" parent="HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer"]
 margin_top = 72.0
-margin_right = 290.0
+margin_right = 307.0
 margin_bottom = 558.0
 presets_enabled = false
 presets_visible = false

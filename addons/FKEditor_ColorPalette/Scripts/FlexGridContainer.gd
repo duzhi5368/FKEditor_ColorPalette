@@ -1,10 +1,12 @@
 # Created by Freeknight
 # Date: 2021/12/16
-# Desc：
+# Desc：色块容器基类
 # @category: 辅助UI类
 #--------------------------------------------------------------------------------------------------
 tool
 extends Container
+
+# 这里为编辑器中展示指定了icon
 class_name FlexGridContainer, "res://addons/FKEditor_ColorPalette/Assets/Pics/FlexGridContainerIcon.png"
 ### Member Variables and Dependencies -------------------------------------------------------------
 #--- signals --------------------------------------------------------------------------------------
@@ -28,10 +30,10 @@ func set_columns(p_columns: int):
 func _notification(p_what):
 	match p_what:
 		NOTIFICATION_SORT_CHILDREN:		
-			var col_minw: Dictionary # Max of min_width  of all controls in each col (indexed by col).
-			var row_minh: Dictionary # Max of min_height of all controls in each row (indexed by row).
-			var col_expanded: Array # Columns which have the SIZE_EXPAND flag set.
-			var row_expanded: Array # Rows which have the SIZE_EXPAND flag set.
+			var col_minw: Dictionary 	# 每列控件的最小宽度（索引为列数）
+			var row_minh: Dictionary 	# 每行控件的最小高度（索引为行数）
+			var col_expanded: Array 	# 设置了 SIZE_EXPAND 标识的列
+			var row_expanded: Array 	# 设置了 SIZE_EXPAND 标识的行
 
 			var hsep = get_constant("hseparation", "GridContainer")
 			var vsep = get_constant("vseparation", "GridContainer")
@@ -42,7 +44,8 @@ func _notification(p_what):
 			
 			var max_col = min(get_child_count(), columns)
 			var max_row = ceil(float(get_child_count()) / float(columns))
-#			Compute the per-column/per-row data.
+
+			# 计算单行/列数据
 			var valid_controls_index = 0
 			for i in range(get_child_count()):
 				var c: Control = get_child(i)
@@ -68,11 +71,11 @@ func _notification(p_what):
 				if c.get_v_size_flags() & SIZE_EXPAND:
 					row_expanded.push_front(row)
 
-#			Consider all empty columns expanded.
+			# 计算当所有空列都展开时的情况
 			for i in range(valid_controls_index, columns):
 				col_expanded.push_front(i)
 
-#			Evaluate the remaining space for expanded columns/rows.
+			# 计算展开行/列后的剩余空间
 			var remaining_space: Vector2 = get_size()			
 			for e in col_minw.keys():
 				if !col_expanded.has(e):
@@ -84,9 +87,10 @@ func _notification(p_what):
 			remaining_space.y -= vsep * max(max_row - 1, 0)
 			remaining_space.x -= hsep * max(max_col - 1, 0)
 
+			# 计算宽度
 			var can_fit = false
 			while !can_fit && col_expanded.size() > 0:
-#				Check if all minwidth constraints are OK if we use the remaining space.
+				# 计算剩余空间是否足够展开
 				can_fit = true
 				var max_index = col_expanded.front()
 				
@@ -97,14 +101,15 @@ func _notification(p_what):
 						if can_fit && (remaining_space.x / col_expanded.size()) < col_minw[e]:
 							can_fit = false
 
-#				If not, the column with maximum minwidth is not expanded.
+				# 剩余空间不足
 				if (!can_fit):
 					col_expanded.erase(max_index)
 					remaining_space.x -= col_minw[max_index]
 
+
+			# 计算高度
 			can_fit = false
 			while !can_fit && row_expanded.size() > 0:
-#				Check if all minheight constraints are OK if we use the remaining space.
 				can_fit = true
 				var max_index = row_expanded.front()
 				
@@ -114,12 +119,12 @@ func _notification(p_what):
 					if can_fit && (remaining_space.y / row_expanded.size()) < row_minh[e]:
 						can_fit = false
 
-#				If not, the row with maximum minheight is not expanded.
 				if (!can_fit):
 					row_expanded.erase(max_index)
 					remaining_space.y -= row_minh[max_index]
 
-#			Finally, fit the nodes.
+
+			# 最终，处理全部节点
 			var col_expand = remaining_space.x / col_expanded.size() if col_expanded.size() > 0 else 0
 			var row_expand = remaining_space.y / row_expanded.size() if row_expanded.size() > 0 else 0
 			var col_ofs = 0
@@ -143,12 +148,13 @@ func _notification(p_what):
 				var s = Vector2(col_expand if col_expanded.has(col) else col_minw[col], row_expand if row_expanded.has(row) else row_minh[row])
 				fit_child_in_rect(c, Rect2(p, s))
 				col_ofs += s.x + hsep
-				
+		
+		# 处理样式大小更变消息
 		NOTIFICATION_THEME_CHANGED:
 			minimum_size_changed()
 # ------------------------------------------------------------------------------
 func _get_minimum_size():
-#	Only worry about max height, not width (since it does width automatically)
+	# 这里只处理高度即可，宽度不管，自动处理
 	var row_minh: Dictionary
 	var vsep = get_constant("vseparation", "GridContainer")
 	var max_row = 0

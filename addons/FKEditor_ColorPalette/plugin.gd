@@ -11,20 +11,25 @@ extends EditorPlugin
 #--- constants ------------------------------------------------------------------------------------
 #--- public variables - order: export > normal var > onready --------------------------------------
 #--- private variables - order: export > normal var > onready -------------------------------------
-var _UI_CPM
+var _mainUI : Control
+
+const ColorPaletteScene := preload("res://addons/FKEditor_ColorPalette/UI/UI_ColorPaletteManager.tscn")
 ### -----------------------------------------------------------------------------------------------
 
 ### Built in Engine Methods -----------------------------------------------------------------------
 func _enter_tree():
-	_UI_CPM = preload("res://addons/FKEditor_ColorPalette/UI/UI_ColorPaletteManager.tscn").instance()
-	_UI_CPM.undoredo = get_undo_redo()
-	add_control_to_bottom_panel(_UI_CPM, "调色板")
+	_mainUI = ColorPaletteScene.instance() as Control
+	if !_mainUI:
+		print("创建调色板面板失败...")
+		return
+	_mainUI.undoredo = get_undo_redo() # 注册todo/undo功能
+	add_control_to_bottom_panel(_mainUI, "调色板")
 # ------------------------------------------------------------------------------
 func _exit_tree():
-	if _UI_CPM == null:
+	if !_mainUI:
 		return
-	remove_control_from_bottom_panel(_UI_CPM)
-	_UI_CPM.free()
+	remove_control_from_bottom_panel(_mainUI)
+	_mainUI.free()
 ### -----------------------------------------------------------------------------------------------
 
 ### Public Methods --------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 # Created by Freeknight
 # Date: 2021/12/16
-# Desc：
+# Desc：主界面
 # @category: UI面板
 #--------------------------------------------------------------------------------------------------
 tool
@@ -10,13 +10,17 @@ extends MarginContainer
 #--- enums ----------------------------------------------------------------------------------------
 #--- constants ------------------------------------------------------------------------------------
 #--- public variables - order: export > normal var > onready --------------------------------------
-# Palette list
+# 刷新色盘按钮
 onready var refresh_list_button = $HBoxContainer/ColorPaletteContainer/OptionsContainer/RefreshList
+# 色盘列表
 onready var palette_list = $HBoxContainer/ColorPaletteContainer/PaletteListScroll/PaletteList
-# Options
+# 色盘路径输入狂
 onready var palette_dir_le = $HBoxContainer/ColorPaletteContainer/OptionsContainer/PaletteDirectory
+# 色盘名称输入框
 onready var new_palette_name_le = $HBoxContainer/ColorPaletteContainer/OptionsContainer/NewPaletteName
+# 创建新色盘按钮
 onready var new_palette_button = $HBoxContainer/ColorPaletteContainer/OptionsContainer/NewPalette
+# 打开色盘文件按钮
 onready var open_palette_dir_button = $HBoxContainer/ColorPaletteContainer/OptionsContainer/OpenPaletteDirectory
 # Color Editor
 onready var color_picker = $HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/ColorPicker
@@ -26,19 +30,21 @@ onready var apply_color_changed_button = $HBoxContainer/ColorEditorContainer/Mar
 onready var new_color_rect = $HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer/NewColorRect
 onready var new_color_button = $HBoxContainer/ColorEditorContainer/Margin/Scroll/ColorPickerContainer/HBoxContainer/AddNewColor
 
+# 一条色盘对应的ui
 var palette_container = preload("res://addons/FKEditor_ColorPalette/UI/UI_ColorPaletteContainer.tscn")
 
-var palettes: Array # of Palette
-var undoredo: UndoRedo # passed from EditorPlugin
-
-var selected_palette: Palette
-var selected_color_index: int
+var palettes: Array				# 全部色盘信息
+var undoredo: UndoRedo			# undo/redo管理器
+var selected_palette: Palette		# 当前激活的色盘
+var selected_color_index: int		# 当前选择的色块索引
 #--- private variables - order: export > normal var > onready -------------------------------------
 ### -----------------------------------------------------------------------------------------------
 
 ### Built in Engine Methods -----------------------------------------------------------------------
 func _ready():
 	refresh_palettes()
+	
+	# 绑定ui事件
 	refresh_list_button.connect("pressed", self, "refresh_palettes")
 	apply_color_changed_button.connect("pressed", self, "_apply_new_color_to_selected_palette")
 	new_palette_button.connect("pressed", self, "_create_new_palette")
@@ -48,22 +54,22 @@ func _ready():
 ### -----------------------------------------------------------------------------------------------
 
 ### Public Methods --------------------------------------------------------------------------------
-
-# Clear the palette list, load the gpl files and populate the list again
 func refresh_palettes():
+	# 清除全部色盘数据
 	palettes.clear()
 	for plc in palette_list.get_children():
 		palette_list.remove_child(plc)
 
-#	Ensure trailing slash
+	# 色盘数据目录
 	if not palette_dir_le.text.ends_with("/"):
 		palette_dir_le.text += "/"
 
+	# 检索全部色盘数据文件
 	var gpl_files = PaletteImporter.get_gpl_files(palette_dir_le.text)
-	
 	for i in gpl_files:
 		palettes.append(PaletteImporter.import_gpl(i))
 	
+	# 创建全部色盘UI
 	for p in palettes:
 		var pc = palette_container.instance()
 		pc.palette = p
@@ -78,7 +84,7 @@ func refresh_palettes():
 
 ### Private Methods -------------------------------------------------------------------------------
 func _on_palette_color_selected(palette: Palette, index: int):
-	color_preview_label.text = ("%s (Color #%s)" % [palette.name, index+1])
+	color_preview_label.text = ("%s (色块编号： #%s)" % [palette.name, index+1])
 	color_preview_rect.color = palette.colors[index]
 	color_picker.color = palette.colors[index]
 	new_color_rect.color = palette.colors[index]
@@ -87,7 +93,6 @@ func _on_palette_color_selected(palette: Palette, index: int):
 	selected_color_index = index
 # ------------------------------------------------------------------------------
 func _apply_new_color_to_selected_palette() -> void:
-#	Check that we can actually apply before doing so
 	var size = selected_palette.colors.size()
 	if size == 0 or selected_color_index >= size:
 		return
@@ -121,7 +126,7 @@ func _on_palette_container_selected(container: Control) -> void:
 	
 	selected_palette = container.palette
 	selected_color_index = 0
-	color_preview_label.text = ("%s (No Color Selected)" % selected_palette.name)
+	color_preview_label.text = ("%s (未选择色块)" % selected_palette.name)
 # ------------------------------------------------------------------------------
 func _add_color_to_selected_palette() -> void:
 	if selected_palette != null:
@@ -135,5 +140,5 @@ func _open_dir_in_file_manager():
 	if dir.dir_exists(path):
 		OS.shell_open(path)
 	else:
-		push_error("Invalid directory.")
+		push_error("无效目录路径。")
 ### -----------------------------------------------------------------------------------------------
